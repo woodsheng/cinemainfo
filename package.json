@@ -17,6 +17,7 @@
     "@vue/cli-service": "^3.9.0",
     "sass": "^1.18.0",
     "sass-loader": "^7.1.0",
+    "vue-function-api": "^2.0.6",
     "vue-template-compiler": "^2.6.10"
   },
   "postcss": {
