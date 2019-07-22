@@ -9,13 +9,13 @@
         <div class="search_result">
             <h3>电影/电视剧/综艺</h3>
             <ul>
-                <li>
-                    <div class="img"><img src="/images/movie_1.jpg"></div>
+                <li v-for="item in mrlists" :key="item.id">
+                    <div class="img"><img :src="item.img "></div>
                     <div class="info">
-                        <p><span>哪吒之魔童降世</span><span>9.2</span></p>
-                        <p>Nezha</p>
-                        <p>喜剧</p>
-                        <p>2019-7-16</p>
+                        <p><span>{{ item.name }}</span><span>{{ item.sc }}</span></p>
+                        <p>{{ item.en }}</p>
+                        <p>{{ item.type }}</p>
+                        <p>{{ item.rt }}</p>
                     </div>
                 </li>
                 <!-- <li v-for="item in moviesList" :key="item.id">
@@ -34,7 +34,37 @@
 
 <script>
 export default {
-    name: "Search"
+    name: "Search",
+    data(){
+        return {
+            message: '',
+            searchlists: [],
+            mrlists: [],
+            results: []
+        }
+    },
+    watch: {
+        message(newval){
+
+            this.axios.get('/json/search.json').then((res) => {
+                this.searchlists = res.data
+                this.results = []
+                for(let i=0;i<this.searchlists.length;i++){
+                    if(this.searchlists[i].en.indexOf(newval) >= 0) {
+                        this.results.push(this.searchlists[i])
+                    }
+                }
+                this.mrlists = this.results
+            }).catch((err) => {
+                if (this.axios.isCancel(err)) {
+                    console.log('Rquest canceled', err.message); //请求如果被取消，这里是返回取消的message
+                } else {
+                    //handle error
+                    console.log(err);
+                }
+            })
+        }
+    }
 }
 </script>
 

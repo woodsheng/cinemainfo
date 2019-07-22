@@ -1,56 +1,19 @@
 <template>
     <div class="movie_body">
-        <Loading v-if="isLoading" />
-        <Scroller v-else>
             <ul>
-                <li>
-                    <div class="pic_show"><img src="/images/movie_7.jpg"></div>
+                <li v-for="item in upcomingList" :key="item.id">
+                    <div class="pic_show"><img :src="item.img"></div>
                     <div class="info_list">
-                        <h2>沉默的证人</h2>
-                        <p><span class="person">17746</span> 人想看</p>
-                        <p>主演: 张家辉,杨紫,任贤齐</p>
-                        <p>2019-8-2上映</p>
+                        <h2>{{ item.name }} <img v-if="item.version" src="@/assets/maxs.png" alt=""></h2>
+                        <p><span class="person">{{ item.wish }}</span> 人想看</p>
+                        <p>主演:  {{ item.star }}</p>
+                        <p>{{ item.rt }}上映</p>
                     </div>
                     <div class="btn_pre">
                         预售
                     </div>
                 </li>
-                <li>
-                    <div class="pic_show"><img src="/images/movie_8.jpg"></div>
-                    <div class="info_list">
-                        <h2>蜘蛛侠：英雄远征</h2>
-                        <p><span class="person">16000</span> 人想看</p>
-                        <p>主演: 汤姆·赫兰德</p>
-                        <p>2019-7-29上映</p>
-                    </div>
-                    <div class="btn_pre">
-                        预售
-                    </div>
-                </li>
-                <li>
-                    <div class="pic_show"><img src="/images/movie_9.jpg"></div>
-                    <div class="info_list">
-                        <h2>灰猴</h2>
-                        <p><span class="person">12796</span> 人想看</p>
-                        <p>主演: 王大治,高峰,王靖云</p>
-                        <p>2019-8-5上映</p>
-                    </div>
-                    <div class="btn_pre">
-                        预售
-                    </div>
-                </li>
-                <li>
-                    <div class="pic_show"><img src="/images/movie_10.jpg"></div>
-                    <div class="info_list">
-                        <h2>桂香街</h2>
-                        <p><span class="person">11006</span> 人想看</p>
-                        <p>主演: 吕丽萍,句号,牟珈乐</p>
-                        <p>2019-8-12上映</p>
-                    </div>
-                    <div class="btn_pre">
-                        预售
-                    </div>
-                </li>
+
                 <!-- <li>
                     <div class="pic_show"><img src="/images/movie_1.jpg"></div>
                     <div class="info_list">
@@ -76,13 +39,27 @@
                     </div>
                 </li> -->
             </ul>
-        </Scroller>
+
     </div>
 </template>
 
 <script>
 export default {
-    name: "Upcoming"
+    name: "Upcoming",
+    data(){
+        return {
+            upcomingList: []
+        }
+    },
+
+    mounted(){
+        this.axios.get("/json/upcoming.json").then(
+            (res) => {
+                this.upcomingList = res.data
+                console.log(this.upcomingList)
+            }
+            )
+    }
 }
 </script>
 

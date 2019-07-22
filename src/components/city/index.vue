@@ -4,66 +4,113 @@
             <div class="city_hot">
                 <h2>热门城市</h2>
                 <ul class="clearfix">
-                    <li>上海</li>
-                    <li>北京</li>
-                    <li>广州</li>
-                    <li>深圳</li>
-                    <li>南京</li>
-                    <li>武汉</li>
+                    <li v-for="item in hotList" :key="item.id">{{ item.name }}</li>
                 </ul>
             </div>
-            <div class="city_sort">
-                <div>
-                    <h2>A</h2>
+            <div class="city_sort" ref="city_sort">
+                <div v-for="item in cityList" :key="item.index">
+                    <h2>{{ item.index }}</h2>
                     <ul>
-                        <li>阿拉善盟</li>
-                        <li>鞍山</li>
-                        <li>安庆</li>
-                        <li>安阳</li>
-                    </ul>
-                    <h2>B</h2>
-                    <ul>
-                        <li>北京</li>
-                        <li>蚌埠</li>
-                        <li>亳州</li>
-                    </ul>
-                    <h2>C</h2>
-                    <ul>
-                        <li>成都</li>
-                        <li>长沙</li>
-                        <li>长春</li>
-                        <li>常州</li>
-                        <li>滁州</li>
-                    </ul>
-                    <h2>D</h2>
-                    <ul>
-                        <li>大连</li>
-                        <li>大同</li>
-                        <li>大庆</li>
-                    </ul>
-                    <h2>E</h2>
-                    <ul>
-                        <li>鄂州</li>
+                        <li v-for="city in item.list" :key="city.id">{{ city.name }}</li>
                     </ul>
                 </div>
             </div>
         </div>
         <div class="city_index">
             <ul>
-                <li>A</li>
-                <li>B</li>
-                <li>C</li>
-                <li>D</li>
-                <li>E</li>
+                <li :key="item.index" @touchstart="handleToIndex(index)" v-for="(item,index) in cityList">{{ item.index }}</li>
             </ul>
         </div>
-
     </div>
 </template>
 
 <script>
+import {value, onMounted} from 'vue-function-api'
+
+function formatCityList(cities) {
+    let cityList = [];
+    let hotList = [];
+
+    //热门城市
+    for(let i=0;i<cities.length;i++){
+        if (cities[i].hot === "1") {
+            hotList.push(cities[i]);
+        }
+    }
+
+    //检查索引的字母是否存在了
+    function toCom(firstLetter) {
+        for(let i=0;i<cityList.length;i++){
+            if( cityList[i].index ===  firstLetter){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    //加入到城市列表信息中去
+    for(let i=0;i<cities.length;i++){
+        let firstLetter = cities[i].pinyin.substring(0,1);
+        if(toCom(firstLetter)){  //新添加index
+            cityList.push({ index : firstLetter , list : [ { name: cities[i].name, id : cities[i].id } ] });
+        }
+        else{   //累加到已有index中
+            for(let j=0;j<cityList.length;j++){
+                if( cityList[j].index === firstLetter ){
+                    cityList[j].list.push( { name : cities[i].name , id : cities[i].id } );
+                }
+            }
+        }
+    }
+    //城市列表中排序
+    cityList.sort((n1,n2)=>{
+        if( n1.index > n2.index ){
+            return 1;
+        }
+        else if(n1.index < n2.index){
+            return -1;
+        }
+        else{
+            return 0;
+        }
+    });
+    return {
+        cityList,
+        hotList
+    };
+}
+
 export default {
-   name: "City"
+    name: "City",
+    data() {
+       return {
+           cityList:[],
+           hotList:[]
+        }
+    },
+    mounted: function () {
+        this.axios.get('/json/city.json').then((res) => {
+            console.log(res)
+            let cities = res.data
+            //[ { index : 'A' , list : [{ name : '阿城' , id : 123 }] } ]
+            let {
+                cityList , hotList
+            }
+            = formatCityList(cities);
+
+            this.cityList = cityList;
+            this.hotList = hotList;
+
+            console.log(this.cityList)
+            console.log(this.hotList)
+        })
+    },
+    methods : {
+      handleToIndex (index)  {
+        let h2 = this.$refs.city_sort.getElementsByTagName('h2')
+       this.$refs.city_sort.parentNode.scrollTop = h2[index].offsetTop
+      }
+    }
 }
 </script>
 
