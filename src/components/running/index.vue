@@ -55,9 +55,7 @@
 
 
             const cityAreaId = this.$store.state.city.areaid
-            console.log(this.$store.state.city.id)
             const num = parseInt(cityAreaId);
-            console.log('cityAreaId')
             if ( this.prevCityAreaId === cityAreaId ) { return; }
 
             this.isLoading = true;
@@ -81,7 +79,10 @@
            },
            handleToTouchEnd(pos){
                if( pos.y > 20 ){
-                   this.axios.get('/json/running.json').then((res)=>{
+                   const cityAreaId = this.$store.state.city.areaid
+                   const num = parseInt(cityAreaId);
+
+                   this.axios.get('/json/running'+num+'.json').then((res)=>{
 
                            this.pullDownMsg = '更新成功';
                            setTimeout(()=>{

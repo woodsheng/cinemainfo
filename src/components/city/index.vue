@@ -99,6 +99,11 @@ export default {
         if(cityList && hotList){
             this.cityList = JSON.parse(cityList);
             this.hotList = JSON.parse(hotList);
+            for(let i=0;i<cityList.length;i++){
+                console.log(cityList[i].name)
+                console.log(cityList[i].id)
+                console.log(cityList[i].areaid)
+            }
             this.isLoading = false;
         }
         else {
@@ -109,6 +114,11 @@ export default {
                 let {cityList, hotList} = formatCityList(cities);
                 this.cityList = cityList;
                 this.hotList = hotList;
+                for(let i=0;i<cityList.length;i++){
+                    console.log(cityList[i].name)
+                    console.log(cityList[i].id)
+                    console.log(cityList[i].areaid)
+                }
                 window.localStorage.setItem('cityList' , JSON.stringify(cityList));
                 window.localStorage.setItem('hotList' , JSON.stringify(hotList));
             })
