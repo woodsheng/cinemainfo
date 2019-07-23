@@ -1,5 +1,7 @@
 <template>
     <div class="movie_body">
+        <Loading v-if="isLoading"></Loading>
+        <Scroller v-else>
             <ul>
                 <li v-for="item in upcomingList" :key="item.id">
                     <div class="pic_show"><img :src="item.img"></div>
@@ -39,7 +41,7 @@
                     </div>
                 </li> -->
             </ul>
-
+        </Scroller>
     </div>
 </template>
 
@@ -48,15 +50,16 @@ export default {
     name: "Upcoming",
     data(){
         return {
-            upcomingList: []
+            upcomingList: [],
+            isLoading : true,
         }
     },
-
     mounted(){
         this.axios.get("/json/upcoming.json").then(
             (res) => {
+                this.isLoading = false
                 this.upcomingList = res.data
-                console.log(this.upcomingList)
+
             }
             )
     }

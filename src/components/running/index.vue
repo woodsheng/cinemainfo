@@ -1,9 +1,14 @@
 <template>
-    <div class="movie_body" ref="movie_body">
+    <div class="movie_body" ref="moviebody">
+
+        <Loading v-if="isLoading"></Loading>
+        <Scroller v-else :handleToScroll="handleToScroll" :handleToTouchEnd="handleToTouchEnd">
+
 
             <ul>
+                <li class="pullDown">{{ pullDownMsg }}</li>
                  <li v-for="item in movieList" :key="item.id">
-                    <div class="pic_show"><img :src="item.img"></div>
+                    <div class="pic_show" @tap="showDetails"><img :src="item.img"></div>
                     <div class="info_list">
                         <h2>{{ item.name }}<img v-if="item.version" src="@/assets/maxs.png" alt=""> </h2>
                         <p>观众评 <span class="grade">{{ item.sc }}</span></p>
@@ -29,12 +34,13 @@
                         </div>
                     </li> -->
                 </ul>
-
+        </Scroller>
         </div>
     </template>
 
     <script>
     import { value } from 'vue-function-api'
+    //import BScroll from 'better-scroll'
     export default {
         name: "Running",
         data(){
@@ -42,16 +48,52 @@
                 movieList : [],
                 pullDownMsg : '',
                 isLoading : true,
-                prevCityId : -1
+                prevCityAreaId : -1
             }
         },
-        mounted: function () {
-            this.axios.get('/json/running.json').then((res) => {
+        activated: function () {
+
+
+            const cityAreaId = this.$store.state.city.areaid
+            console.log(this.$store.state.city.id)
+            const num = parseInt(cityAreaId);
+            console.log('cityAreaId')
+            if ( this.prevCityAreaId === cityAreaId ) { return; }
+
+            this.isLoading = true;
+            console.log('123')
+
+            this.axios.get('/json/running'+num+'.json').then((res) => {
+                this.isLoading = false
                 this.movieList = res.data
-                console.log(this.movieList)
+                this.prevCityAreaId = cityAreaId
 
             })
         },
+       methods: {
+            showDetails(){
+                console.log('taped pics')
+            },
+           handleToScroll(pos){
+               if( pos.y > 20 ){
+                   this.pullDownMsg = '正在更新中';
+               }
+           },
+           handleToTouchEnd(pos){
+               if( pos.y > 20 ){
+                   this.axios.get('/json/running.json').then((res)=>{
+
+                           this.pullDownMsg = '更新成功';
+                           setTimeout(()=>{
+                               this.movieList = res.data
+                               this.pullDownMsg = '';
+                           },1000);
+
+
+                   });
+               }
+           }
+        }
     }
 
     </script>

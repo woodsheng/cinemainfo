@@ -1,6 +1,8 @@
 <template>
     <div class="cinema_body">
 
+        <Loading v-if="isLoading"></Loading>
+        <Scroller v-else >
             <ul>
                 <li v-for="item in clists" :key="item.id">
                         <div>
@@ -41,7 +43,7 @@
                    </div>
                </li>-->
            </ul>
-
+        </Scroller>
    </div>
 </template>
 
@@ -50,11 +52,13 @@ export default {
    name: "Cinemalists",
     data(){
        return{
-           clists:[]
+           clists:[],
+           isLoading: true
        }
     },
     mounted :function(){
         this.axios.get('/json/cinemas.json').then((res) => {
+            this.isLoading =false
             this.clists = res.data
             console.log(this.clists)
 

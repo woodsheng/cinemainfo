@@ -1,20 +1,26 @@
 <template>
     <div class="city_body">
-         <div class="city_list">
-            <div class="city_hot">
-                <h2>热门城市</h2>
-                <ul class="clearfix">
-                    <li v-for="item in hotList" :key="item.id">{{ item.name }}</li>
-                </ul>
-            </div>
-            <div class="city_sort" ref="city_sort">
-                <div v-for="item in cityList" :key="item.index">
-                    <h2>{{ item.index }}</h2>
-                    <ul>
-                        <li v-for="city in item.list" :key="city.id">{{ city.name }}</li>
-                    </ul>
-                </div>
-            </div>
+         <div class="city_list" >
+             <Loading v-if="isLoading"></Loading>
+             <Scroller v-else  ref="city_List">
+                 <div>
+                     <div class="city_hot">
+                         <h2>热门城市</h2>
+                         <ul class="clearfix">
+                             <li v-for="item in hotList" :key="item.id" @tap="handleToCity(item.name,item.id,item.areaid)">{{ item.name}}</li>
+                         </ul>
+                     </div>
+                     <div class="city_sort" ref="city_sort">
+                         <div v-for="item in cityList" :key="item.index">
+                             <h2>{{ item.index }}</h2>
+                             <ul>
+                                 <li v-for="city in item.list" :key="city.id" @tap="handleToCity(city.name,city.id,city.areaid)">{{ city.name }}</li>
+                             </ul>
+                         </div>
+                     </div>
+                 </div>
+
+             </Scroller>
         </div>
         <div class="city_index">
             <ul>
@@ -25,16 +31,16 @@
 </template>
 
 <script>
-import {value, onMounted} from 'vue-function-api'
-
 function formatCityList(cities) {
     let cityList = [];
     let hotList = [];
 
     //热门城市
     for(let i=0;i<cities.length;i++){
-        if (cities[i].hot === "1") {
+        if  (cities[i].hot === "1") {
+
             hotList.push(cities[i]);
+
         }
     }
 
@@ -85,31 +91,68 @@ export default {
     data() {
        return {
            cityList:[],
-           hotList:[]
+           hotList:[],
+           isLoading : true,
         }
     },
     mounted: function () {
-        this.axios.get('/json/city.json').then((res) => {
-            console.log(res)
-            let cities = res.data
-            //[ { index : 'A' , list : [{ name : '阿城' , id : 123 }] } ]
-            let {
-                cityList , hotList
+        const cityList = window.localStorage.getItem('cityList');
+        const hotList = window.localStorage.getItem('hotList');
+
+
+
+        if(cityList && hotList){
+            this.cityList = JSON.parse(cityList);
+            this.hotList = JSON.parse(hotList);
+            for(let i=0;i<this.hotList.length;i++){
+                console.log(this.hotList[i].name)
+                console.log(this.hotList[i].id)
+                console.log(this.hotList[i].pinyin)
+                console.log(this.hotList[i].hot)
+                console.log(this.hotList[i].areaid)
             }
-            = formatCityList(cities);
+            this.isLoading = false;
+        }
+        else {
 
-            this.cityList = cityList;
-            this.hotList = hotList;
+            this.axios.get('/json/cities.json').then((res) => {
+                this.isLoading = false
+                let cities = res.data
+                //[ { index : 'A' , list : [{ name : '阿城' , id : 123 }] } ]
+                let {cityList, hotList} = formatCityList(cities);
+                this.cityList = cityList;
+                this.hotList = hotList;
 
-            console.log(this.cityList)
-            console.log(this.hotList)
-        })
+                for(let i=0;i<this.hotList.length;i++){
+                    console.log(this.hotList[i].name)
+                    console.log(this.hotList[i].id)
+                    console.log(this.hotList[i].pinyin)
+                    console.log(this.hotList[i].hot)
+                    console.log(this.hotList[i].areaid)
+                }
+                window.localStorage.setItem('cityList' , JSON.stringify(cityList));
+                window.localStorage.setItem('hotList' , JSON.stringify(hotList));
+            })
+        }
+
+
     },
     methods : {
       handleToIndex (index)  {
         let h2 = this.$refs.city_sort.getElementsByTagName('h2')
-       this.$refs.city_sort.parentNode.scrollTop = h2[index].offsetTop
-      }
+       // this.$refs.city_sort.parentNode.scrollTop = h2[index].offsetTop
+          this.$refs.city_List.toScrollTop(-h2[index].offsetTop);
+      },
+        handleToCity(name,id,areaid){
+            this.$store.commit('city/CITY_INFO',{ name , id, areaid });
+             window.localStorage.setItem('nowName',name);
+             window.localStorage.setItem('nowId',id);
+            window.localStorage.setItem('nowAreaId',areaid);
+            console.log(name)
+            console.log(id)
+            console.log(areaid)
+            this.$router.push('/movie/running');
+        }
     }
 }
 </script>
