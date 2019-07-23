@@ -38,9 +38,7 @@ function formatCityList(cities) {
     //热门城市
     for(let i=0;i<cities.length;i++){
         if  (cities[i].hot === "1") {
-
             hotList.push(cities[i]);
-
         }
     }
 
@@ -58,12 +56,12 @@ function formatCityList(cities) {
     for(let i=0;i<cities.length;i++){
         let firstLetter = cities[i].pinyin.substring(0,1);
         if(toCom(firstLetter)){  //新添加index
-            cityList.push({ index : firstLetter , list : [ { name: cities[i].name, id : cities[i].id } ] });
+            cityList.push({ index : firstLetter , list : [ { name: cities[i].name, id : cities[i].id, areaid : cities[i].areaid } ] });
         }
         else{   //累加到已有index中
             for(let j=0;j<cityList.length;j++){
                 if( cityList[j].index === firstLetter ){
-                    cityList[j].list.push( { name : cities[i].name , id : cities[i].id } );
+                    cityList[j].list.push( { name : cities[i].name , id : cities[i].id, areaid : cities[i].areaid } );
                 }
             }
         }
@@ -98,44 +96,23 @@ export default {
     mounted: function () {
         const cityList = window.localStorage.getItem('cityList');
         const hotList = window.localStorage.getItem('hotList');
-
-
-
         if(cityList && hotList){
             this.cityList = JSON.parse(cityList);
             this.hotList = JSON.parse(hotList);
-            for(let i=0;i<this.hotList.length;i++){
-                console.log(this.hotList[i].name)
-                console.log(this.hotList[i].id)
-                console.log(this.hotList[i].pinyin)
-                console.log(this.hotList[i].hot)
-                console.log(this.hotList[i].areaid)
-            }
             this.isLoading = false;
         }
         else {
-
-            this.axios.get('/json/cities.json').then((res) => {
+            this.axios.get('/json/city.json').then((res) => {
                 this.isLoading = false
                 let cities = res.data
-                //[ { index : 'A' , list : [{ name : '阿城' , id : 123 }] } ]
+                //[ { index : 'A' , list : [{ name : '阿城' , id : '123000' ,areaid : '1'}] } ]
                 let {cityList, hotList} = formatCityList(cities);
                 this.cityList = cityList;
                 this.hotList = hotList;
-
-                for(let i=0;i<this.hotList.length;i++){
-                    console.log(this.hotList[i].name)
-                    console.log(this.hotList[i].id)
-                    console.log(this.hotList[i].pinyin)
-                    console.log(this.hotList[i].hot)
-                    console.log(this.hotList[i].areaid)
-                }
                 window.localStorage.setItem('cityList' , JSON.stringify(cityList));
                 window.localStorage.setItem('hotList' , JSON.stringify(hotList));
             })
         }
-
-
     },
     methods : {
       handleToIndex (index)  {
@@ -148,9 +125,6 @@ export default {
              window.localStorage.setItem('nowName',name);
              window.localStorage.setItem('nowId',id);
             window.localStorage.setItem('nowAreaId',areaid);
-            console.log(name)
-            console.log(id)
-            console.log(areaid)
             this.$router.push('/movie/running');
         }
     }
