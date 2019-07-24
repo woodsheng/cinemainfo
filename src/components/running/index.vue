@@ -8,9 +8,9 @@
             <ul>
                 <li class="pullDown">{{ pullDownMsg }}</li>
                  <li v-for="item in movieList" :key="item.id">
-                    <div class="pic_show" @tap="showDetails"><img :src="item.img"></div>
+                    <div class="pic_show" @tap="showDetails(item.id)"><img :src="item.img"></div>
                     <div class="info_list">
-                        <h2>{{ item.name }}<img v-if="item.version" src="@/assets/maxs.png" alt=""> </h2>
+                        <h2 @tap="showDetails(item.id)">{{ item.name }}<img v-if="item.version" src="@/assets/maxs.png" alt=""> </h2>
                         <p>观众评 <span class="grade">{{ item.sc }}</span></p>
                         <p>主演: {{ item.star }}</p>
                         <p>{{ item.showinfo }}</p>
@@ -69,8 +69,10 @@
             })
         },
        methods: {
-            showDetails(){
-                console.log('taped pics')
+            showDetails(movieId){
+                console.log(movieId)
+                this.$router.push('/movie/detail/1/' + movieId)
+
             },
            handleToScroll(pos){
                if( pos.y > 20 ){

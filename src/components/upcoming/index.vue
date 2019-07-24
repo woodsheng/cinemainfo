@@ -4,9 +4,9 @@
         <Scroller v-else>
             <ul>
                 <li v-for="item in upcomingList" :key="item.id">
-                    <div class="pic_show"><img :src="item.img"></div>
+                    <div class="pic_show" @tap="showDetails(item.id)"><img :src="item.img"></div>
                     <div class="info_list">
-                        <h2>{{ item.name }} <img v-if="item.version" src="@/assets/maxs.png" alt=""></h2>
+                        <h2 @tap="showDetails(item.id)">{{ item.name }} <img v-if="item.version" src="@/assets/maxs.png" alt=""></h2>
                         <p><span class="person">{{ item.wish }}</span> 人想看</p>
                         <p>主演:  {{ item.star }}</p>
                         <p>{{ item.rt }}上映</p>
@@ -55,6 +55,13 @@ export default {
             prevCityAreaId : -1
         }
     },
+    methods: {
+        showDetails(movieId){
+            console.log(movieId)
+            this.$router.push('/movie/detail/2/' + movieId)
+
+        }
+        },
    activated(){
        const cityAreaId = this.$store.state.city.areaid
        const num = parseInt(cityAreaId)
