@@ -25,11 +25,82 @@
 <script>
 import Header from '@/components/header'
 import Footer from '@/components/footer'
+import { messageBox} from '@/components/jscoms'
 
 export default {
     name: "Movie",
     components: {
         Header, Footer
+    } ,
+    mounted(){
+        setTimeout(() => {
+            this.axios.get('/json/currentcity.json').then((res)=>{
+                const name = res.data.result.data.city;
+                const id = res.data.result.data.cityid;
+                const areaid = res.data.result.data.areaid
+                console.log('out:'+ name)
+                console.log(id)
+                console.log(areaid)
+                if( this.$store.state.city.id === id ){return;}
+                messageBox({
+                    title : '本地城市定位',
+                    content : name,
+                    cancel : '取消',
+                    ok : '切换到本地',
+                    handleOk(){
+                        console.log('before:'+ name)
+                        console.log(id)
+                        console.log(areaid)
+                        window.localStorage.setItem('nowName',name);
+                        window.localStorage.setItem('nowId',id);
+                        window.localStorage.setItem('nowAreaId',areaid);
+                        window.location.reload();
+                        console.log('after:'+ name)
+                        console.log(id)
+                        console.log(areaid)
+                    }
+                });
+            })
+
+        },3000)
+
+        /*messageBox({
+            title : '定位',
+            content : 'sheng',
+            cancel : '取消',
+            ok : '切换定位',
+            handleCancel(){
+                console.log(1)
+            },
+            handleOk(){
+                console.log(2)
+            }
+        });*/
+
+        /*setTimeout(()=>{
+            this.axios.get('/json/currentcity.json').then((res)=>{
+
+
+                    const name = res.result.data.city;
+                    const id = res.result.data.cityid;
+                    const areaid = res.result.data.areaid
+                    if( this.$store.state.city.id === id ){return;}
+                    messageBox({
+                        title : '定位',
+                        content : name,
+                        cancel : '取消',
+                        ok : '切换定位',
+                        handleOk(){
+                            window.localStorage.setItem('nowName',name);
+                            window.localStorage.setItem('nowId',id);
+                            window.localStorage.setItem('nowAreaId',areaid);
+                            window.location.reload();
+                        }
+                    });
+
+            });
+        },3000);*/
+
     }
 
 }

@@ -59,7 +59,7 @@
             if ( this.prevCityAreaId === cityAreaId ) { return; }
 
             this.isLoading = true;
-            console.log('123')
+
 
             this.axios.get('/json/running'+num+'.json').then((res) => {
                 this.isLoading = false

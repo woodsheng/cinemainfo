@@ -52,16 +52,21 @@ export default {
         return {
             upcomingList: [],
             isLoading : true,
+            prevCityAreaId : -1
         }
     },
-    mounted(){
-        this.axios.get("/json/upcoming.json").then(
-            (res) => {
+   activated(){
+       const cityAreaId = this.$store.state.city.areaid
+       const num = parseInt(cityAreaId)
+       if ( this.prevCityAreaId === cityAreaId ) { return; }
+
+       this.isLoading = true
+
+        this.axios.get('/json/upcoming'+num+'.json').then(  (res) => {
                 this.isLoading = false
                 this.upcomingList = res.data
-
-            }
-            )
+              this.prevCityAreaId = cityAreaId
+            })
     }
 }
 </script>

@@ -53,14 +53,21 @@ export default {
     data(){
        return{
            clists:[],
-           isLoading: true
+           isLoading: true,
+           prevCityAreaId : -1
        }
     },
-    mounted :function(){
-        this.axios.get('/json/cinemas.json').then((res) => {
+    activated :function(){
+        const cityAreaId = this.$store.state.city.areaid
+        const num = parseInt(cityAreaId);
+        if ( this.prevCityAreaId === cityAreaId ) { return; }
+        this.isLoading = true; //不相等开启加载动画
+
+        this.axios.get('/json/cinemas'+num+'.json').then((res) => {
             this.isLoading =false
             this.clists = res.data
-            console.log(this.clists)
+            this.prevCityAreaId = cityAreaId
+           // console.log(this.clists)
 
         })
 
