@@ -1,0 +1,1 @@
+{"code":"10000","charge":false,"msg":"查询成功","result":{"status":200,"msg":"success","data":{"area":"华东","city":"徐州","cityid":"320300","country":"中国","country_id":"CN","ip":"183.209.186.181","isp":"移动","long_ip":"3083975349","region":"江苏","region_id":"320000","areaid": "5"}}}

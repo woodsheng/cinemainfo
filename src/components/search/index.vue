@@ -45,8 +45,10 @@ export default {
     },
     watch: {
         message(newval){
+            const cityAreaId = this.$store.state.city.areaid;
+            const num = parseInt(cityAreaId)
 
-            this.axios.get('/json/search.json').then((res) => {
+            this.axios.get('/json/search'+num+'.json').then((res) => {
                 this.searchlists = res.data
                 this.results = []
                 for(let i=0;i<this.searchlists.length;i++){

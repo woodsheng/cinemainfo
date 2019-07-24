@@ -1,5 +1,7 @@
 <template>
     <div class="movie_body">
+        <Loading v-if="isLoading"></Loading>
+        <Scroller v-else>
             <ul>
                 <li v-for="item in upcomingList" :key="item.id">
                     <div class="pic_show"><img :src="item.img"></div>
@@ -39,7 +41,7 @@
                     </div>
                 </li> -->
             </ul>
-
+        </Scroller>
     </div>
 </template>
 
@@ -48,17 +50,23 @@ export default {
     name: "Upcoming",
     data(){
         return {
-            upcomingList: []
+            upcomingList: [],
+            isLoading : true,
+            prevCityAreaId : -1
         }
     },
+   activated(){
+       const cityAreaId = this.$store.state.city.areaid
+       const num = parseInt(cityAreaId)
+       if ( this.prevCityAreaId === cityAreaId ) { return; }
 
-    mounted(){
-        this.axios.get("/json/upcoming.json").then(
-            (res) => {
+       this.isLoading = true
+
+        this.axios.get('/json/upcoming'+num+'.json').then(  (res) => {
+                this.isLoading = false
                 this.upcomingList = res.data
-                console.log(this.upcomingList)
-            }
-            )
+              this.prevCityAreaId = cityAreaId
+            })
     }
 }
 </script>

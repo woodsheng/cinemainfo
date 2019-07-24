@@ -1,6 +1,8 @@
 <template>
     <div class="cinema_body">
 
+        <Loading v-if="isLoading"></Loading>
+        <Scroller v-else >
             <ul>
                 <li v-for="item in clists" :key="item.id">
                         <div>
@@ -41,7 +43,7 @@
                    </div>
                </li>-->
            </ul>
-
+        </Scroller>
    </div>
 </template>
 
@@ -50,13 +52,22 @@ export default {
    name: "Cinemalists",
     data(){
        return{
-           clists:[]
+           clists:[],
+           isLoading: true,
+           prevCityAreaId : -1
        }
     },
-    mounted :function(){
-        this.axios.get('/json/cinemas.json').then((res) => {
+    activated :function(){
+        const cityAreaId = this.$store.state.city.areaid
+        const num = parseInt(cityAreaId);
+        if ( this.prevCityAreaId === cityAreaId ) { return; }
+        this.isLoading = true; //不相等开启加载动画
+
+        this.axios.get('/json/cinemas'+num+'.json').then((res) => {
+            this.isLoading =false
             this.clists = res.data
-            console.log(this.clists)
+            this.prevCityAreaId = cityAreaId
+           // console.log(this.clists)
 
         })
 
